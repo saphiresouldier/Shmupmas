@@ -1,0 +1,56 @@
+{
+    "name": "InputAction_1",
+    "maps": [
+        {
+            "name": "New action map",
+            "id": "b32a17ea-bd8c-4fef-8935-9ea23d3b478e",
+            "actions": [
+                {
+                    "name": "Action1",
+                    "type": "Button",
+                    "id": "df588cff-cec4-4882-a1ca-7e89acdc1c55",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "d2fbdce8-e56b-4f32-beef-4bc409e3020c",
+                    "path": "<Keyboard>/space",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "Default_1",
+                    "action": "Action1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1c8d39a5-7bc3-4f31-8f70-d270cf8de351",
+                    "path": "<Touchscreen>/primaryTouch/phase",
+                    "interactions": "Tap",
+                    "processors": "",
+                    "groups": "Default_1",
+                    "action": "Action1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Default_1",
+            "bindingGroup": "Default_1",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

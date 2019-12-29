@@ -2,7 +2,8 @@
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
+        _NoiseTex ("Noise Texture", 2D) = "white" {}
+		_NoiseTexSize ("Noise Texture Dimension", Float) = 512
     }
     SubShader
     {
@@ -32,7 +33,8 @@
                 float4 vertex : SV_POSITION;
             };
 
-            sampler2D _MainTex;
+            sampler2D _NoiseTex;
+			float _NoiseTexSize;
             float4 _MainTex_ST;
 
             v2f vert (appdata v)
@@ -47,7 +49,7 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv);
+                fixed4 col = tex2D(_NoiseTex, i.uv);
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
@@ -60,15 +62,17 @@
 			//by nimitz 2015 (twitter: @stormoid)
 			//License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
 
+
+
 			#define time iTime
 			float2x2 mm2(in float a) { float c = cos(a), s = sin(a); return float2x2(c, s, -s, c); }
-			float noise(float t) { return textureLod(iChannel0, vec2(t, .0) / iChannelResolution[0].xy, 0.0).x; }
+			float noise(float t) { return tex2D(_NoiseTex, float2(t, .0) / float2(_NoiseTexSize, _NoiseTexSize)).x; }
 			float moy = 0.;
 
 			float noise(in vec3 p)
 			{
-				vec3 ip = floor(p);
-				vec3 fp = fract(p);
+				float3 ip = floor(p);
+				float3 fp = fract(p);
 				fp = fp * fp*(3.0 - 2.0*fp);
 				vec2 tap = (ip.xy + vec2(37.0, 17.0)*ip.z) + fp.xy;
 				vec2 rz = textureLod(iChannel0, (tap + 0.5) / 256.0, 0.0).yx;

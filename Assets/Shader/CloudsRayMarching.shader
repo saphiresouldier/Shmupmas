@@ -7,7 +7,7 @@
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Transparent" }
         LOD 100
 
         Pass
@@ -31,6 +31,7 @@
                 float2 uv : TEXCOORD0;
                 UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
+				float4 screenpos : TEXCOORD2;
             };
 
             sampler2D _NoiseTex;
@@ -42,17 +43,9 @@
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+				o.screenpos = ComputeScreenPos(o.vertex);
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
-            }
-
-            fixed4 frag (v2f i) : SV_Target
-            {
-                // sample the texture
-                fixed4 col = tex2D(_NoiseTex, i.uv);
-                // apply fog
-                UNITY_APPLY_FOG(i.fogCoord, col);
-                return col;
             }
 
 			//--------------------------------------------------------------------------------
@@ -62,14 +55,11 @@
 			//by nimitz 2015 (twitter: @stormoid)
 			//License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
 
-
-
-			#define time iTime
-			float2x2 mm2(in float a) { float c = cos(a), s = sin(a); return float2x2(c, s, -s, c); }
+			float2x2 mm2(float a) { float c = cos(a), s = sin(a); return float2x2(c, s, -s, c); }
 			float noise(float t) { return tex2D(_NoiseTex, float2(t, .0) / float2(_NoiseTexSize, _NoiseTexSize)).x; }
 			float moy = 0.;
 
-			float noise(in float3 p)
+			float noise(float3 p)
 			{
 				float3 ip = floor(p);
 				float3 fp = frac(p);
@@ -79,7 +69,7 @@
 				return lerp(rz.x, rz.y, fp.z);
 			}
 
-			float fbm(in float3 x)
+			float fbm(float3 x)
 			{
 				float rz = 0.;
 				float a = .35;
@@ -92,13 +82,13 @@
 				return rz;
 			}
 
-			float path(in float x) { return sin(x*0.01 - 3.1415)*28. + 6.5; }
+			float path(float x) { return sin(x*0.01 - 3.1415)*28. + 6.5; }
 
 			float map(float3 p) {
 				return p.y*0.07 + (fbm(p*0.3) - 0.1) + sin(p.x*0.24 + sin(p.z*.01)*7.)*0.22 + 0.15 + sin(p.z*0.08)*0.05;
 			}
 
-			float march(in float3 ro, in float3 rd)
+			float march(float3 ro, float3 rd)
 			{
 				float precis = .3;
 				float h = 1.;
@@ -117,7 +107,8 @@
 
 			float3 lgt = float3(0,0,0);
 			float mapV(float3 p) { return clamp(-map(p), 0., 1.); }
-			float4 marchV(in float3 ro, in float3 rd, in float t, in float3 bgc)
+
+			float4 marchV(float3 ro, float3 rd, float t, float3 bgc)
 			{
 				float4 rz = float4(0.0, 0.0, 0.0, 0.0);
 
@@ -144,7 +135,7 @@
 				return clamp(rz, 0., 1.);
 			}
 
-			float pent(in float2 p) {
+			float pent(float2 p) {
 				float2 q = abs(p);
 				return max(max(q.x*1.176 - p.y*0.385, q.x*0.727 + p.y), -p.y*1.237)*1.;
 			}
@@ -174,13 +165,13 @@
 			float3x3 rot_y(float a) { float sa = sin(a); float ca = cos(a); return float3x3(ca, .0, sa, .0, 1., .0, -sa, .0, ca); }
 			float3x3 rot_z(float a) { float sa = sin(a); float ca = cos(a); return float3x3(ca, sa, .0, -sa, ca, .0, .0, .0, 1.); }
 
-			void mainImage(out fixed4 fragColor, in float2 fragCoord)
+			fixed4 mainImage(float2 fragCoord)
 			{
 				float2 q = fragCoord.xy / _ScreenParams.xy;
 				float2 p = q - 0.5;
 				float asp = _ScreenParams.x / _ScreenParams.y;
 				p.x *= asp;
-				float2 mo = float2(1.0, 1.0);
+				float2 mo = float2(0.5, 0.5);
 				//float2 mo = iMouse.xy / _ScreenParams.xy;
 				moy = mo.y;
 				float st = sin(_Time.y*0.3 - 1.3)*0.2;
@@ -202,7 +193,7 @@
 				rd.y -= dot(p, p)*0.06;
 				rd = normalize(rd);
 
-				float3 col = float3(0.0, 0.0, 0.0);
+				float3 col = float3(0.0, 0.0, 0.0); //BG Base Color
 				lgt = normalize(float3(-0.3, mo.y + 0.1, 1.));
 				float rdl = clamp(dot(rd, lgt), 0., 1.);
 
@@ -213,9 +204,11 @@
 				col += .3*float3(1., 1., 0.1)*exp2(rdl*100. - 100.);
 				col += .5*float3(1., .7, 0.)*exp2(rdl*50. - 50.);
 				col += .4*float3(1., 0., 0.05)*exp2(rdl*10. - 10.);
+				
 				float3 bgc = col;
 
-				float rz = march(ro, rd);
+				//float rz = march(ro, rd);
+				float rz = 75.;
 
 				if (rz < 70.)
 				{
@@ -234,8 +227,25 @@
 				col = pow(col, float3(0.416667, 0.416667, 0.416667))*1.055 - 0.055; //sRGB
 				col *= pow(16.0*q.x*q.y*(1.0 - q.x)*(1.0 - q.y), 0.12); //Vign
 
-				fragColor = fixed4(col, 1.0);
+				return fixed4(col, 1.0);
+
+				//return fixed4(0.0,1.0,0.0,1.0);
 			}
+
+			fixed4 frag(v2f i) : SV_Target
+			{
+				// sample the texture
+				//fixed4 col = tex2D(_NoiseTex, i.uv);
+				fixed4 col = fixed4(0,0,0,0);
+				// apply fog
+				UNITY_APPLY_FOG(i.fogCoord, col);
+
+				//raymarching
+				col = mainImage(i.screenpos.xy);
+
+				return col;
+			}
+
 			//--------------------------------------------------------------------------------
             ENDCG
         }

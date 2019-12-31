@@ -167,7 +167,8 @@
 
 			fixed4 mainImage(float2 fragCoord)
 			{
-				float2 q = fragCoord.xy / _ScreenParams.xy;
+				/*float2 q = fragCoord.xy / _ScreenParams.xy;*/
+				float2 q = fragCoord.xy;
 				float2 p = q - 0.5;
 				float asp = _ScreenParams.x / _ScreenParams.y;
 				p.x *= asp;
@@ -207,8 +208,8 @@
 				
 				float3 bgc = col;
 
-				//float rz = march(ro, rd);
-				float rz = 75.;
+				float rz = march(ro, rd);
+				//float rz = 75.;
 
 				if (rz < 70.)
 				{

@@ -1,52 +1,37 @@
 ﻿Shader "Custom/CloudsRayMarchingImageFX"
 {
-    Properties
-    {
-        _MainTex ("Texture", 2D) = "white" {}
-    }
-    SubShader
-    {
-        // No culling or depth
-        Cull Off ZWrite Off ZTest Always
+	HLSLINCLUDE
 
-        Pass
-        {
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
+	#include "Packages/com.unity.postprocessing/PostProcessing/Shaders/StdLib.hlsl"
 
-            #include "UnityCG.cginc"
+	TEXTURE2D_SAMPLER2D(_MainTex, sampler_MainTex);
+	TEXTURE2D_SAMPLER2D(_NoiseTex, sampler_NoiseTex);
+	float _Blend;
+	float _NoiseTexDimension;
 
-            struct appdata
-            {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
-            };
+	float4 Frag(VaryingsDefault i) : SV_Target
+	{
+		float4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.texcoord);
+		float4 noise = SAMPLE_TEXTURE2D(_NoiseTex, sampler_NoiseTex, i.texcoord);
+		float luminance = dot(color.rgb, float3(0.2126729, 0.7151522, 0.0721750));
+		color.rgb = lerp(color.rgb, luminance.xxx, _Blend.xxx);
+		return color;
+	}
 
-            struct v2f
-            {
-                float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
-            };
+		ENDHLSL
 
-            v2f vert (appdata v)
-            {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
-                return o;
-            }
+		SubShader
+	{
+		Cull Off ZWrite Off ZTest Always
 
-            sampler2D _MainTex;
+			Pass
+		{
+			HLSLPROGRAM
 
-            fixed4 frag (v2f i) : SV_Target
-            {
-                fixed4 col = tex2D(_MainTex, i.uv);
-                // just invert the colors
-                col.rgb = 1 - col.rgb;
-                return col;
-            }
-            ENDCG
-        }
-    }
+				#pragma vertex VertDefault
+				#pragma fragment Frag
+
+			ENDHLSL
+		}
+	}
 }

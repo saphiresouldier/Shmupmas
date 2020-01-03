@@ -1,5 +1,31 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9187681707506880048
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51f27c2aaad8cf84fa94d496349cdd25, type: 3}
+  m_Name: ImageEffectCloudsRayMarching
+  m_EditorClassIdentifier: 
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 1
+  noiseTex:
+    overrideState: 1
+    value: {fileID: 2800000, guid: 742e39d2650f1c947a948feae27e1ee4, type: 3}
+    defaultState: 1
+  blend:
+    overrideState: 1
+    value: 0
+  noiseTexDimension:
+    overrideState: 1
+    value: 512
 --- !u!114 &-8360842182972272660
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -47,6 +73,32 @@ MonoBehaviour:
   blend:
     overrideState: 1
     value: 0
+--- !u!114 &-2145729219030334238
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51f27c2aaad8cf84fa94d496349cdd25, type: 3}
+  m_Name: ImageEffectCloudsRayMarching
+  m_EditorClassIdentifier: 
+  active: 1
+  enabled:
+    overrideState: 1
+    value: 1
+  noiseTex:
+    overrideState: 1
+    value: {fileID: 2800000, guid: 742e39d2650f1c947a948feae27e1ee4, type: 3}
+    defaultState: 1
+  blend:
+    overrideState: 1
+    value: 0
+  noiseTexDimension:
+    overrideState: 1
+    value: 512
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,7 +114,7 @@ MonoBehaviour:
   settings:
   - {fileID: 165043455337615713}
   - {fileID: -8360842182972272660}
-  - {fileID: -2900327617380920598}
+  - {fileID: -2145729219030334238}
 --- !u!114 &165043455337615713
 MonoBehaviour:
   m_ObjectHideFlags: 3

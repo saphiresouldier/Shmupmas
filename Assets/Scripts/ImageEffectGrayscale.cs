@@ -4,13 +4,13 @@ using UnityEngine.Rendering.PostProcessing;
 
 [Serializable]
 [PostProcess(typeof(GrayscaleRenderer), PostProcessEvent.AfterStack, "Custom/Grayscale")]
-public sealed class ImageEffectScript : PostProcessEffectSettings
+public sealed class ImageEffectGrayscale : PostProcessEffectSettings
 {
     [Range(0f, 1f), Tooltip("Grayscale effect intensity.")]
     public FloatParameter blend = new FloatParameter { value = 0.5f };
 }
 
-public sealed class GrayscaleRenderer : PostProcessEffectRenderer<ImageEffectScript>
+public sealed class GrayscaleRenderer : PostProcessEffectRenderer<ImageEffectGrayscale>
 {
     public override void Render(PostProcessRenderContext context)
     {

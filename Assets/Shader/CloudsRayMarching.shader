@@ -43,8 +43,8 @@
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+				UNITY_TRANSFER_FOG(o, o.vertex);
 				o.screenpos = ComputeScreenPos(o.vertex);
-                UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }
 
@@ -165,10 +165,10 @@
 			float3x3 rot_y(float a) { float sa = sin(a); float ca = cos(a); return float3x3(ca, .0, sa, .0, 1., .0, -sa, .0, ca); }
 			float3x3 rot_z(float a) { float sa = sin(a); float ca = cos(a); return float3x3(ca, sa, .0, -sa, ca, .0, .0, .0, 1.); }
 
-			fixed4 mainImage(float2 fragCoord)
+			fixed4 mainImage(float2 q)
 			{
 				/*float2 q = fragCoord.xy / _ScreenParams.xy;*/
-				float2 q = fragCoord.xy;
+				//float2 q = fragCoord.xy;
 				float2 p = q - 0.5;
 				float asp = _ScreenParams.x / _ScreenParams.y;
 				p.x *= asp;
